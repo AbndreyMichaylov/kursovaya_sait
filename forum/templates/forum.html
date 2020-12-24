@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <title>Форум</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{% static "css/index.css" %}">
+        <style>
+        </style>
+    </head>
+    <body class="" style="background-color: #a6caf0;">
+        <div class="row">
+        <nav class="navbar navbar-light bg-primary">
+            {% if user.is_authenticated %}
+                <img src="{% static "images/logo.png" %}" class="col-4" style="width: 10%; height: auto;">
+                <span  class="border border-muted p-2 col-2 text-white bg-info mr-5"> Пользователь, {{ user.username }}! </span>
+            <p class="col-3"></p>
+            <a href="/logout" class="border p-2 btn btn-info col-1 mr-3">Выход</a>
+            <p class="col-1"></p>
+            {% else %}
+            <img src="{% static "images/logo.png" %}" class="col-1" style="width: 10%; height: auto;">
+            <p class="col-6 mr-5"></p>
+            <br>
+            <a href="/login" class="border p-2 btn btn-dark col-1">Вход</a>
+            <a href="/register" class="border p-2 btn btn-dark col-1">Регистрация</a>
+            <p class="col-2"></p>
+            {% endif %}        
+        </nav>
+        </div>
+        {% for post in posts %}
+        <div class="container mb-1 mt-3">
+            <div class="card border border-primary">
+                <div class="card-body">
+                    <h1 class="display-3">{{ post.title }}</h1>
+                    <p class="text-secondary h6"> {{ post.time }}</p>
+                    <p> -{{ post.username }}</p>
+                    <p> <em>{{ post.message }}</em></p>
+                    <h5 class="p-1">Комментарии:</h5>
+                    <ul class="list-group list-group-flush">
+                    {% for comm in post.comments.all %} 
+                       <li class="list-group-item border border-secondary mb-1">{{ comm.user }}: {{ comm.text }} <span class="text-secondary h6"> {{ comm.time }} </span></li>
+                    {% endfor %}
+                    </ul>
+                    {% if  user.is_authenticated %}
+                    <form action="" method="POST" class="p-1">
+                        <input type="hidden" value="{{ post.id }}" name="post">
+                        {% csrf_token %}
+                        {{ commentform }}
+                        <input type="submit" name="" id="" value="Отправить">
+                    </form>
+                    {% endif %}
+                </div>                   
+            </div>
+        </div>        
+        {% endfor %}
+                        
+        {% if  user.is_authenticated %}
+            <div class="container text-center"><a href="add_post" class="border border-success p-2 btn btn-primary container-fluid">Добавить пост</a></div>
+        {% endif %}
+    </body>
+</html>
